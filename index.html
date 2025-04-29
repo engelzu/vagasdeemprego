@@ -295,7 +295,7 @@
 <body class="bg-light">
     <header class="bg-white py-3 shadow-sm">
         <div class="container">
-            <h1 class="text-primary">
+             <h1 class="text-primary">
                 <i class="fas fa-briefcase"></i>
                 Vagas de Emprego
             </h1>
@@ -308,67 +308,7 @@
             <div id="lista-vagas" class="row">
             </div>
         </section>
-        <section id="criar-vaga-section" class="card p-4">
-            <h2 class="card-title text-primary">
-                <i class="fas fa-plus-circle"></i>
-                Adicionar Vaga
-            </h2>
-            <form id="form-vaga" class="form-group">
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="empresa" name="empresa"  placeholder="Ex: Google" required>
-                    <label for="empresa">Nome da Empresa:</label>
-                </div>
-
-                <div class="form-floating mb-3">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="ex:  \[endereço de e-mail removido]" required>
-                     <label for="email">Email:</label>
-                </div>
-
-                <div class="form-floating mb-3">
-                    <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="Ex: (00) 00000-0000" required>
-                    <label for="telefone">Telefone:</label>
-                </div>
-
-                <div class="form-floating mb-3">
-                    <select class="form-select" id="tipo" name="tipo">
-                        <option value="" disabled selected>Selecione o Tipo de Vaga</option>
-                        <option value="presencial">Presencial</option>
-                        <option value="remoto">Remoto</option>
-                        <option value="hibrido">Híbrido</option>
-                    </select>
-                    <label for="tipo">Tipo de Vaga:</label>
-                </div>
-
-                <div class="form-floating mb-3">
-                    <input type="number" class="form-control" id="salario" name="salario" min="0" step="0.01" placeholder="Ex: 5000.00" required>
-                     <label for="salario">Salário:</label>
-                </div>
-
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="local" name="local" placeholder="Ex: São Paulo, SP" required>
-                    <label for="local">Local:</label>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Anunciar Vaga</button>
-                <div id="mensagem-erro" class="text-danger mt-3 hidden"></div>
-            </form>
-        </section>
-         <div id="modal-candidatura" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Candidatar-se</h2>
-                    <span class="close-button" id="close-modal">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <p>Para se candidatar a esta vaga, envie seu currículo em formato PDF:</p>
-                    <input type="file" id="curriculo-input" accept=".pdf" required class="form-control">
-                     <div id="mensagem-erro-modal" class="text-danger mt-3"></div>
-                </div>
-                <div class="modal-footer">
-                    <button id="enviar-candidatura" class="btn btn-primary">Enviar Candidatura</button>
-                </div>
-            </div>
-        </div>
+        
     </main>
 
     <script>
@@ -378,10 +318,7 @@
         const enviarCandidaturaBtn = document.getElementById('enviar-candidatura');
         const curriculoInput = document.getElementById('curriculo-input');
         const mensagemErroModal = document.getElementById('mensagem-erro-modal');
-        const formVaga = document.getElementById('form-vaga');
 
-
-        let vagaSelecionada = null;
 
         const vagas = [
             {
