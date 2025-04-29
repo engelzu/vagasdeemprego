@@ -1,77 +1,534 @@
-<script>
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vagas de Emprego</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyA1ZTbr-dDAi85A3SFgr1J-_FQHJDEGMwM",
-  authDomain: "empregos-fb73e.firebaseapp.com",
-  projectId: "empregos-fb73e",
-  storageBucket: "empregos-fb73e.firebasestorage.app",
-  messagingSenderId: "618508885156",
-  appId: "1:618508885156:web:2bab9e97c0c72206d2da31",
-  measurementId: "G-KB9S9F1Y42"
-};
+        header {
+            background-color: #fff;
+            color: #0a66c2;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+        }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-// Initialize Firestore
-const db = getFirestore(app);
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center; /* Para alinhar o ícone e o título verticalmente */
+            gap: 0.5rem; /* Adiciona um pequeno espaço entre o ícone e o texto */
+        }
 
-// Função para adicionar uma nova vaga ao Firestore
-async function adicionarVaga(vaga) {
-  try {
-    const docRef = await addDoc(collection(db, "vagas"), vaga);
-    console.log("Vaga adicionada com ID: ", docRef.id);
-    alert('Vaga anunciada com sucesso! A empresa entrará em contato.');
-  } catch (error) {
-    console.error("Erro ao adicionar vaga: ", error);
-    alert('Erro ao anunciar vaga. Por favor, tente novamente.');
-  }
-}
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 80px;
+            padding-bottom: 3rem;
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+        }
 
-// Seleciona o formulário de vagas (certifique-se de que o ID corresponde ao do seu formulário)
-const formVaga = document.getElementById('form-vaga');
+        #vagas-section, #criar-vaga-section {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
 
-// Exemplo de uso da função adicionarVaga
-formVaga.addEventListener('submit', (event) => {
-    event.preventDefault();
+        #vagas-section:hover, #criar-vaga-section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
 
-    const empresa = document.getElementById('empresa').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const telefone = document.getElementById('telefone').value.trim();
-    const tipo = document.getElementById('tipo').value;
-    const salario = document.getElementById('salario').value.trim();
-    const local = document.getElementById('local').value.trim();
+        #vagas-section h2, #criar-vaga-section h2 {
+            margin-top: 0;
+            color: #0a66c2;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-align: center;
+            display: flex; /* Para alinhar o ícone e o texto */
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    const erroMensagem = validarFormulario(empresa, email, telefone, salario, local);
+        .vaga-card {
+            padding: 1.5rem;
+            border-radius: 10px;
+            background-color: #fff;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e0e0e0;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
 
-    if (erroMensagem) {
-        mensagemErro.textContent = erroMensagem;
-        mensagemErro.classList.remove('hidden');
-        return;
-    }
-     mensagemErro.classList.add('hidden');
-     mensagemErro.textContent = '';
+        .vaga-card:hover {
+            background-color: #f8f8f8;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+        }
 
-    const novaVaga = {
-        empresa: empresa,
-        email: email,
-        telefone: telefone,
-        tipo: tipo,
-        salario: parseFloat(salario),
-        local: local,
-        dataPublicacao: new Date() // Adiciona a data de publicação
-    };
+        .vaga-titulo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0a66c2;
+            margin-bottom: 0.5rem;
+        }
 
-    adicionarVaga(novaVaga); // Chama a função para adicionar a vaga ao Firestore
-    formVaga.reset();
+        .vaga-empresa {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .vaga-empresa i{
+            color: #0a66c2;
+        }
 
-});
+        .vaga-local {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-function validarFormulario(empresa, email, telefone, salario, local) {
+         .vaga-local i{
+            color: #555;
+        }
+
+        .vaga-tipo {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .vaga-tipo i{
+            color: #555;
+        }
+
+        .vaga-salario {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 1.5rem;
+        }
+
+        .vaga-descricao {
+            font-size: 1rem;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .vaga-detalhes {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vaga-detalhes button {
+            color: #0a66c2;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color 0.2s ease, transform 0.1s ease;
+            border: none;
+            background-color: transparent;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .vaga-detalhes button:hover {
+            color: #074b8e;
+            transform: translateX(2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            animation: fadeIn 0.3s;
+        }
+
+       @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-body p {
+            margin: 0;
+            font-size: 1rem;
+            color: #444;
+        }
+
+        .modal-footer {
+            text-align: right;
+        }
+
+        .modal-footer button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-footer button:hover {
+            background-color: #0056b3;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #mensagem-erro {
+            color: red;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            padding: 0.5rem;
+            background-color: #ffe0e0;
+            border: 1px solid #ffb3b3;
+            border-radius: 4px;
+        }
+
+    </style>
+</head>
+<body class="bg-light">
+    <header class="bg-white py-3 shadow-sm">
+        <div class="container">
+            <h1 class="text-primary">
+                <i class="fas fa-briefcase"></i>
+                Vagas de Emprego
+            </h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="vagas-section">
+            <h2>Vagas Disponíveis</h2>
+            <div id="lista-vagas" class="row">
+            </div>
+        </section>
+        <section id="criar-vaga-section" class="card p-4">
+            <h2 class="card-title text-primary">
+                <i class="fas fa-plus-circle"></i>
+                Adicionar Vaga
+            </h2>
+            <form id="form-vaga" class="form-group">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="empresa" name="empresa"  placeholder="Ex: Google" required>
+                    <label for="empresa">Nome da Empresa:</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="ex:  \[endereço de e-mail removido]" required>
+                     <label for="email">Email:</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="Ex: (00) 00000-0000" required>
+                    <label for="telefone">Telefone:</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="tipo" name="tipo">
+                        <option value="" disabled selected>Selecione o Tipo de Vaga</option>
+                        <option value="presencial">Presencial</option>
+                        <option value="remoto">Remoto</option>
+                        <option value="hibrido">Híbrido</option>
+                    </select>
+                    <label for="tipo">Tipo de Vaga:</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="salario" name="salario" min="0" step="0.01" placeholder="Ex: 5000.00" required>
+                     <label for="salario">Salário:</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="local" name="local" placeholder="Ex: São Paulo, SP" required>
+                    <label for="local">Local:</label>
+                </div>
+                 <div class="form-floating mb-3">
+                    <textarea class="form-control" placeholder="Descrição da vaga" id="descricao" name="descricao" required></textarea>
+                    <label for="descricao">Descrição:</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Anunciar Vaga</button>
+                <div id="mensagem-erro" class="text-danger mt-3 hidden"></div>
+            </form>
+        </section>
+         <div id="modal-candidatura" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Candidatar-se</h2>
+                    <span class="close-button" id="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Para se candidatar a esta vaga, envie seu currículo em formato PDF:</p>
+                    <input type="file" id="curriculo-input" accept=".pdf" required class="form-control">
+                     <div id="mensagem-erro-modal" class="text-danger mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button id="enviar-candidatura" class="btn btn-primary">Enviar Candidatura</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        import { initializeApp } from 'firebase/app';
+        import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "empregos-fb73e.firebaseapp.com",
+            projectId: "empregos-fb73e",
+            storageBucket: "empregos-fb73e.firebasestorage.app",
+            messagingSenderId: "618508885156",
+            appId: "1:618508885156:web:2bab9e97c0c72206d2da31",
+            measurementId: "G-KB9S9F1Y42"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // Initialize Firestore
+        const db = getFirestore(app);
+
+        const listaVagas = document.getElementById('lista-vagas');
+        const modalCandidatura = document.getElementById('modal-candidatura');
+        const closeModalBtn = document.getElementById('close-modal');
+        const enviarCandidaturaBtn = document.getElementById('enviar-candidatura');
+        const curriculoInput = document.getElementById('curriculo-input');
+        const mensagemErroModal = document.getElementById('mensagem-erro-modal');
+        const formVaga = document.getElementById('form-vaga');
+        const criarVagaSection = document.getElementById('criar-vaga-section');
+
+
+        let vagaSelecionada = null;
+
+       async function exibirVagas() {
+            listaVagas.innerHTML = '';
+            try {
+                const vagasSnapshot = await getDocs(collection(db, "vagas"));
+                vagasSnapshot.forEach((doc) => {
+                    const vagaData = doc.data();
+                    const vagaCard = document.createElement('div');
+                    vagaCard.classList.add('vaga-card', 'col-12 col-md-6 col-lg-4');
+
+                    vagaCard.innerHTML = `
+                        <h3 class="vaga-titulo">${vagaData.empresa}</h3>
+                        <p class="vaga-empresa">
+                            <i class="fas fa-building"></i>
+                            ${vagaData.empresa}
+                        </p>
+                        <p class="vaga-local">
+                           <i class="fas fa-map-marker-alt"></i>
+                            ${vagaData.local}
+                        </p>
+                        <p class="vaga-tipo">
+                            <i class="fas fa-clock"></i>
+                            ${vagaData.tipo}
+                        </p>
+                        <p class="vaga-salario">Salário: R$ ${vagaData.salario.toFixed(2)}</p>
+                        <p class="vaga-descricao">${vagaData.descricao}</p>
+                        <div class="vaga-detalhes d-flex justify-content-between align-items-center">
+                            <button class="btn btn-primary btn-sm candidatar-btn" data-vaga-id="${doc.id}">Candidatar-se</button>
+                        </div>
+                    `;
+                    listaVagas.appendChild(vagaCard);
+                });
+
+                 // Adiciona event listener para o botão "Candidatar-se" de cada vaga
+                const candidatarButtons = document.querySelectorAll('.candidatar-btn');
+                candidatarButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const vagaId = button.dataset.vagaId;
+                        vagaSelecionada = vagas.find(vaga => vaga.id === vagaId);
+                        if (vagaSelecionada) {
+                            console.log(`Candidatando-se para a vaga de ${vagaSelecionada.empresa}`);
+                            modalCandidatura.style.display = "block";
+                        } else {
+                            alert("Vaga não encontrada!");
+                        }
+                    });
+                });
+
+            } catch (error) {
+                console.error("Erro ao buscar vagas:", error);
+                alert("Erro ao carregar vagas. Por favor, tente novamente mais tarde.");
+            }
+        }
+
+
+
+        // Event listeners para o Modal de Excluir
+        closeModalBtn.addEventListener('click', () => {
+            modalCandidatura.style.display = "none";
+            curriculoInput.value = '';
+            mensagemErroModal.textContent = '';
+        });
+
+
+
+       enviarCandidaturaBtn.addEventListener('click', async () => { // Adicione async aqui
+            const curriculo = curriculoInput.files[0];
+            mensagemErroModal.textContent = '';
+
+            if (!curriculo) {
+                mensagemErroModal.textContent = "Por favor, selecione um arquivo de currículo.";
+                mensagemErroModal.classList.remove('hidden');
+                return;
+            }
+
+            if (curriculo.type !== 'application/pdf') {
+                mensagemErroModal.textContent = "Por favor, envie um arquivo PDF.";
+                mensagemErroModal.classList.remove('hidden');
+                return;
+            }
+
+            if (curriculo.size > 2 * 1024 * 1024) { // 2MB
+                mensagemErroModal.textContent = "O arquivo do currículo deve ter no máximo 2MB.";
+                mensagemErroModal.classList.remove('hidden');
+                return;
+            }
+
+            console.log("Currículo enviado:", curriculo);
+
+            // Converta o arquivo para base64 para armazenar no Firestore
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const curriculoBase64 = e.target.result;
+
+                try {
+                    // Adicione um novo documento à coleção "candidaturas" no Firestore
+                    const docRef = await addDoc(collection(db, "candidaturas"), {
+                        vagaId: vagaSelecionada.id,
+                        candidatoEmail: '\[email protected]', // Substitua pelo email do candidato
+                        curriculo: curriculoBase64,
+                        nomeArquivo: curriculo.name,
+                        timestamp: new Date()
+                    });
+                    console.log("Currículo enviado com sucesso! ID do documento: ", docRef.id);
+                    alert('Candidatura enviada com sucesso! A empresa entrará em contato.');
+                    modalCandidatura.style.display = "none";
+                    curriculoInput.value = '';
+                     exibirVagas();
+
+                } catch (error) {
+                    console.error("Erro ao enviar currículo:", error);
+                    mensagemErroModal.textContent = "Erro ao enviar candidatura. Por favor, tente novamente.";
+                    mensagemErroModal.classList.remove('hidden');
+                }
+            };
+            reader.readAsDataURL(curriculo); // Inicia a leitura do arquivo como base64
+        });
+
+
+
+        function validarFormulario(empresa, email, telefone, salario, local, descricao) {
             if (!empresa) {
                 return "Nome da empresa é obrigatório.";
             }
@@ -93,11 +550,60 @@ function validarFormulario(empresa, email, telefone, salario, local) {
             if (!local) {
                 return "Local é obrigatório.";
             }
+             if (!descricao) {
+                return "Descrição é obrigatória.";
+            }
             return null;
         }
 
-        function isValidEmail(email) {
-            const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-            return emailRegex.test(email);
-        }
-</script>
+
+        formVaga.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const empresa = document.getElementById('empresa').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+            const tipo = document.getElementById('tipo').value;
+            const salario = document.getElementById('salario').value.trim();
+            const local = document.getElementById('local').value.trim();
+             const descricao = document.getElementById('descricao').value.trim();
+
+            const erroMensagem = validarFormulario(empresa, email, telefone, salario, local, descricao);
+
+            if (erroMensagem) {
+                mensagemErro.textContent = erroMensagem;
+                mensagemErro.classList.remove('hidden');
+                return;
+            }
+            mensagemErro.classList.add('hidden');
+            mensagemErro.textContent = '';
+
+            const novaVaga = {
+                empresa: empresa,
+                email: email,
+                telefone: telefone,
+                tipo: tipo,
+                salario: parseFloat(salario),
+                local: local,
+                descricao: descricao,
+                dataPublicacao: new Date()
+            };
+
+            try {
+                 const docRef = await addDoc(collection(db, "vagas"), novaVaga);
+                  console.log("Vaga adicionada com ID: ", docRef.id);
+                  alert('Vaga anunciada com sucesso!');
+                  formVaga.reset();
+                  exibirVagas();
+            } catch (error) {
+                  console.error("Erro ao adicionar vaga:", error);
+                  alert('Erro ao anunciar vaga. Por favor, tente novamente.');
+            }
+           
+
+        });
+
+        exibirVagas();
+    </script>
+</body>
+</html>
