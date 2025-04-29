@@ -42,8 +42,8 @@
             font-size: 2rem;
             font-weight: bold;
             letter-spacing: -0.02em;
-            display: flex;
-            align-items: center; /* Para alinhar o ícone e o título verticalmente */
+            display: flex; /* Para alinhar o ícone e o título verticalmente */
+            align-items: center;
             gap: 0.5rem; /* Adiciona um pequeno espaço entre o ícone e o texto */
         }
 
@@ -388,7 +388,7 @@
             storageBucket: "empregos-fb73e.firebasestorage.app",
             messagingSenderId: "618508885156",
             appId: "1:618508885156:web:2bab9e97c0c72206d2da31",
-            measurementId: "G-KB9S9F1Y42"
+            measurementId: "G-KB9S9F1Y42" // Opcional
         };
 
         // Initialize Firebase
@@ -409,14 +409,14 @@
 
         let vagaSelecionada = null;
 
-       async function exibirVagas() {
+        async function exibirVagas() {
             listaVagas.innerHTML = '';
             try {
                 const vagasSnapshot = await getDocs(collection(db, "vagas"));
                 vagasSnapshot.forEach((doc) => {
                     const vagaData = doc.data();
                     const vagaCard = document.createElement('div');
-                    vagaCard.classList.add('vaga-card', 'col-12 col-md-6 col-lg-4');
+                    vagaCard.classList.add('vaga-card', 'col-12 col-md-6 col-lg-4'); // Usa as classes do Bootstrap para layout
 
                     vagaCard.innerHTML = `
                         <h3 class="vaga-titulo">${vagaData.empresa}</h3>
@@ -473,7 +473,7 @@
 
 
 
-       enviarCandidaturaBtn.addEventListener('click', async () => { // Adicione async aqui
+        enviarCandidaturaBtn.addEventListener('click', async () => { // Adicione async aqui
             const curriculo = curriculoInput.files[0];
             mensagemErroModal.textContent = '';
 
@@ -484,13 +484,13 @@
             }
 
             if (curriculo.type !== 'application/pdf') {
-                mensagemErroModal.textContent = "Por favor, envie um arquivo PDF.";
+                 mensagemErroModal.textContent = "Por favor, envie um arquivo PDF.";
                 mensagemErroModal.classList.remove('hidden');
                 return;
             }
 
             if (curriculo.size > 2 * 1024 * 1024) { // 2MB
-                mensagemErroModal.textContent = "O arquivo do currículo deve ter no máximo 2MB.";
+                 mensagemErroModal.textContent = "O arquivo do currículo deve ter no máximo 2MB.";
                 mensagemErroModal.classList.remove('hidden');
                 return;
             }
@@ -595,11 +595,12 @@
                   alert('Vaga anunciada com sucesso!');
                   formVaga.reset();
                   exibirVagas();
+
             } catch (error) {
                   console.error("Erro ao adicionar vaga:", error);
                   alert('Erro ao anunciar vaga. Por favor, tente novamente.');
             }
-           
+
 
         });
 
