@@ -1,25 +1,24 @@
 <script>
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyA1ZTbr-dDAi85A3SFgr1J-_FQHJDEGMwM",
-  authDomain: "empregos-fb73e.firebaseapp.com",
-  projectId: "empregos-fb73e",
-  storageBucket: "empregos-fb73e.firebasestorage.app",
-  messagingSenderId: "618508885156",
-  appId: "1:618508885156:web:2bab9e97c0c72206d2da31",
-  measurementId: "G-KB9S9F1Y42"
+  apiKey: "AIzaSyA1ZTbr-dDAi85A3SFgr1J-_FQHJDEGMwM",
+  authDomain: "empregos-fb73e.firebaseapp.com",
+  projectId: "empregos-fb73e",
+  storageBucket: "empregos-fb73e.firebasestorage.app",
+  messagingSenderId: "618508885156",
+  appId: "1:618508885156:web:2bab9e97c0c72206d2da31",
+  measurementId: "G-KB9S9F1Y42"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+// Initialize Firestore
+const db = getFirestore(app);
 
 // Função para adicionar uma nova vaga ao Firestore
 async function adicionarVaga(vaga) {
@@ -32,6 +31,9 @@ async function adicionarVaga(vaga) {
     alert('Erro ao anunciar vaga. Por favor, tente novamente.');
   }
 }
+
+// Seleciona o formulário de vagas (certifique-se de que o ID corresponde ao do seu formulário)
+const formVaga = document.getElementById('form-vaga');
 
 // Exemplo de uso da função adicionarVaga
 formVaga.addEventListener('submit', (event) => {
@@ -68,4 +70,34 @@ formVaga.addEventListener('submit', (event) => {
     formVaga.reset();
 
 });
+
+function validarFormulario(empresa, email, telefone, salario, local) {
+            if (!empresa) {
+                return "Nome da empresa é obrigatório.";
+            }
+            if (!email) {
+                return "Email é obrigatório.";
+            }
+            if (!isValidEmail(email)) {
+                return "Por favor, insira um email válido.";
+            }
+            if (!telefone) {
+                return "Telefone é obrigatório.";
+            }
+             if (!salario) {
+                return "Salário é obrigatório.";
+            }
+            if (salario < 0) {
+                return "Por favor, insira um salário válido (maior ou igual a zero).";
+            }
+            if (!local) {
+                return "Local é obrigatório.";
+            }
+            return null;
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+            return emailRegex.test(email);
+        }
 </script>
