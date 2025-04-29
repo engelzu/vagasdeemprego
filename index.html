@@ -313,7 +313,7 @@
                 <i class="fas fa-plus-circle"></i>
                 Adicionar Vaga
             </h2>
-            <form id="form-vaga" class="form-group" >
+            <form id="form-vaga" class="form-group"  onsubmit="return false;">
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="empresa" name="empresa"  placeholder="Ex: Google" required>
                     <label for="empresa">Nome da Empresa:</label>
@@ -377,18 +377,19 @@
 
     <script>
         import { initializeApp } from 'firebase/app';
-        import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot } from 'firebase/firestore';
 
         // Your web app's Firebase configuration
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "empregos-fb73e.firebaseapp.com",
-            projectId: "empregos-fb73e",
-            storageBucket: "empregos-fb73e.firebasestorage.app",
-            messagingSenderId: "618508885156",
-            appId: "1:618508885156:web:2bab9e97c0c72206d2da31",
-            measurementId: "G-KB9S9F1Y42" // Opcional
+            const firebaseConfig = {
+  apiKey: "AIzaSyA1ZTbr-dDAi85A3SFgr1J-_FQHJDEGMwM",
+  authDomain: "empregos-fb73e.firebaseapp.com",
+  projectId: "empregos-fb73e",
+  storageBucket: "empregos-fb73e.firebasestorage.app",
+  messagingSenderId: "618508885156",
+  appId: "1:618508885156:web:2bab9e97c0c72206d2da31",
+  measurementId: "G-KB9S9F1Y42"
         };
 
         // Initialize Firebase
@@ -404,39 +405,39 @@
         const curriculoInput = document.getElementById('curriculo-input');
         const mensagemErroModal = document.getElementById('mensagem-erro-modal');
         const formVaga = document.getElementById('form-vaga');
-        const criarVagaSection = document.getElementById('criar-vaga-section');
         const cadastrarVagaBtn = document.getElementById('cadastrar-vaga-btn');
 
 
         let vagaSelecionada = null;
 
-        async function exibirVagas() {
+        function exibirVagas() {
             listaVagas.innerHTML = '';
-            try {
-                const vagasSnapshot = await getDocs(collection(db, "vagas"));
-                vagasSnapshot.forEach((doc) => {
-                    const vagaData = doc.data();
+            const vagasCollection = collection(db, "vagas");
+             const unsubscribe = onSnapshot(vagasCollection, (snapshot) => {
+                const vagas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                listaVagas.innerHTML = '';
+                vagas.forEach(vaga => {
                     const vagaCard = document.createElement('div');
-                    vagaCard.classList.add('vaga-card', 'col-12 col-md-6 col-lg-4'); // Usa as classes do Bootstrap para layout
+                    vagaCard.classList.add('vaga-card', 'col-12 col-md-6 col-lg-4');
 
                     vagaCard.innerHTML = `
-                        <h3 class="vaga-titulo">${vagaData.empresa}</h3>
+                        <h3 class="vaga-titulo">${vaga.empresa}</h3>
                         <p class="vaga-empresa">
                             <i class="fas fa-building"></i>
-                            ${vagaData.empresa}
+                            ${vaga.empresa}
                         </p>
                         <p class="vaga-local">
                            <i class="fas fa-map-marker-alt"></i>
-                            ${vagaData.local}
+                            ${vaga.local}
                         </p>
                         <p class="vaga-tipo">
                             <i class="fas fa-clock"></i>
-                            ${vagaData.tipo}
+                            ${vaga.tipo}
                         </p>
-                        <p class="vaga-salario">Salário: R$ ${vagaData.salario.toFixed(2)}</p>
-                        <p class="vaga-descricao">${vagaData.descricao}</p>
+                        <p class="vaga-salario">Salário: R$ ${vaga.salario.toFixed(2)}</p>
+                        <p class="vaga-descricao">${vaga.descricao}</p>
                         <div class="vaga-detalhes d-flex justify-content-between align-items-center">
-                            <button class="btn btn-primary btn-sm candidatar-btn" data-vaga-id="${doc.id}">Candidatar-se</button>
+                            <button class="btn btn-primary btn-sm candidatar-btn" data-vaga-id="${vaga.id}">Candidatar-se</button>
                         </div>
                     `;
                     listaVagas.appendChild(vagaCard);
@@ -446,7 +447,7 @@
                 const candidatarButtons = document.querySelectorAll('.candidatar-btn');
                 candidatarButtons.forEach(button => {
                     button.addEventListener('click', () => {
-                        const vagaId = parseInt(button.dataset.vagaId);
+                        const vagaId = button.dataset.vagaId;
                         vagaSelecionada = vagas.find(vaga => vaga.id === vagaId);
                         if (vagaSelecionada) {
                             console.log(`Candidatando-se para a vaga de ${vagaSelecionada.empresa}`);
@@ -457,10 +458,9 @@
                     });
                 });
 
-            } catch (error) {
-                console.error("Erro ao buscar vagas:", error);
-                alert("Erro ao carregar vagas. Por favor, tente novamente mais tarde.");
-            }
+            });
+
+
         }
 
 
@@ -510,13 +510,14 @@
                         candidatoEmail: '\[email protected]', // Substitua pelo email do candidato
                         curriculo: curriculoBase64,
                         nomeArquivo: curriculo.name,
-                        timestamp: new Date()
+                        timestamp: new Date(),
+                        dataCandidatura: new Date()
                     });
                     console.log("Currículo enviado com sucesso! ID do documento: ", docRef.id);
                     alert('Candidatura enviada com sucesso! A empresa entrará em contato.');
                     modalCandidatura.style.display = "none";
                     curriculoInput.value = '';
-                     exibirVagas();
+
 
                 } catch (error) {
                     console.error("Erro ao enviar currículo:", error);
