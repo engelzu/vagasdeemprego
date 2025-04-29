@@ -81,7 +81,7 @@
             font-weight: bold;
             margin-bottom: 2rem;
             text-align: center;
-            display: flex;
+            display: flex; /* Para alinhar o ícone e o texto */
             align-items: center;
             gap: 0.5rem;
         }
@@ -295,7 +295,7 @@
 <body class="bg-light">
     <header class="bg-white py-3 shadow-sm">
         <div class="container">
-             <h1 class="text-primary">
+            <h1 class="text-primary">
                 <i class="fas fa-briefcase"></i>
                 Vagas de Emprego
             </h1>
@@ -308,23 +308,39 @@
             <div id="lista-vagas" class="row">
             </div>
         </section>
-        
+         <div id="modal-candidatura" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Candidatar-se</h2>
+                    <span class="close-button" id="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Para se candidatar a esta vaga, envie seu currículo em formato PDF:</p>
+                    <input type="file" id="curriculo-input" accept=".pdf" required class="form-control">
+                     <div id="mensagem-erro-modal" class="text-danger mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button id="enviar-candidatura" class="btn btn-primary">Enviar Candidatura</button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script>
-        const listaVagas = document.getElementById('lista-vagas');
+       const listaVagas = document.getElementById('lista-vagas');
         const modalCandidatura = document.getElementById('modal-candidatura');
         const closeModalBtn = document.getElementById('close-modal');
         const enviarCandidaturaBtn = document.getElementById('enviar-candidatura');
         const curriculoInput = document.getElementById('curriculo-input');
         const mensagemErroModal = document.getElementById('mensagem-erro-modal');
 
+        let vagaSelecionada = null;
 
         const vagas = [
             {
                 id: 1,
                 empresa: 'Google',
-                email: ' \[endereço de e-mail removido]',
+                email: '\[email protected]',
                 telefone: '(11) 1234-5678',
                 tipo: 'Presencial',
                 salario: 10000.00,
@@ -334,7 +350,7 @@
             {
                 id: 2,
                 empresa: 'Amazon',
-                email: ' \[endereço de e-mail removido]',
+                email: '\[email protected]',
                 telefone: '(21) 9876-5432',
                 tipo: 'Remoto',
                 salario: 12000.00,
@@ -344,7 +360,7 @@
              {
                 id: 3,
                 empresa: 'Microsoft',
-                email: ' \[endereço de e-mail removido]',
+                email: '\[email protected]',
                 telefone: '(11) 3344-5566',
                 tipo: 'Híbrido',
                 salario: 11000.00,
@@ -354,7 +370,7 @@
             {
                 id: 4,
                 empresa: 'Facebook',
-                email: ' \[endereço de e-mail removido]',
+                email: '\[email protected]',
                 telefone: '(31) 2233-4455',
                 tipo: 'Remoto',
                 salario: 13000.00,
@@ -364,7 +380,7 @@
             {
                 id: 5,
                 empresa: 'Apple',
-                email: ' \[endereço de e-mail removido]',
+                email: '\[email protected]',
                 telefone: '(21) 9988-7766',
                 tipo: 'Presencial',
                 salario: 15000.00,
