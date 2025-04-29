@@ -42,9 +42,9 @@
             font-size: 2rem;
             font-weight: bold;
             letter-spacing: -0.02em;
-            display: flex; /* Para alinhar o ícone e o título verticalmente */
+            display: flex;
             align-items: center;
-            gap: 0.5rem; /* Adiciona um pequeno espaço entre o ícone e o texto */
+            gap: 0.5rem;
         }
 
         main {
@@ -313,7 +313,7 @@
                 <i class="fas fa-plus-circle"></i>
                 Adicionar Vaga
             </h2>
-            <form id="form-vaga" class="form-group">
+            <form id="form-vaga" class="form-group" onsubmit="return false;">
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="empresa" name="empresa"  placeholder="Ex: Google" required>
                     <label for="empresa">Nome da Empresa:</label>
@@ -353,7 +353,7 @@
                     <label for="descricao">Descrição:</label>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Anunciar Vaga</button>
+                <button type="submit" class="btn btn-primary" id="cadastrar-vaga-btn">Anunciar Vaga</button>
                 <div id="mensagem-erro" class="text-danger mt-3 hidden"></div>
             </form>
         </section>
@@ -382,7 +382,7 @@
         // Your web app's Firebase configuration
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
+            apiKey: "AIzaSyA1ZTbr-dDAi85A3SFgr1J-_FQHJDEGMwM",
             authDomain: "empregos-fb73e.firebaseapp.com",
             projectId: "empregos-fb73e",
             storageBucket: "empregos-fb73e.firebasestorage.app",
@@ -405,18 +405,19 @@
         const mensagemErroModal = document.getElementById('mensagem-erro-modal');
         const formVaga = document.getElementById('form-vaga');
         const criarVagaSection = document.getElementById('criar-vaga-section');
+        const cadastrarVagaBtn = document.getElementById('cadastrar-vaga-btn');
 
 
         let vagaSelecionada = null;
 
         async function exibirVagas() {
-            listaVagas.innerHTML = '';
+             listaVagas.innerHTML = '';
             try {
                 const vagasSnapshot = await getDocs(collection(db, "vagas"));
                 vagasSnapshot.forEach((doc) => {
                     const vagaData = doc.data();
                     const vagaCard = document.createElement('div');
-                    vagaCard.classList.add('vaga-card', 'col-12 col-md-6 col-lg-4'); // Usa as classes do Bootstrap para layout
+                    vagaCard.classList.add('vaga-card', 'col-12 col-md-6 col-lg-4');
 
                     vagaCard.innerHTML = `
                         <h3 class="vaga-titulo">${vagaData.empresa}</h3>
@@ -557,7 +558,7 @@
         }
 
 
-        formVaga.addEventListener('submit', async (event) => {
+        cadastrarVagaBtn.addEventListener('submit', async (event) => {
             event.preventDefault();
 
             const empresa = document.getElementById('empresa').value.trim();
